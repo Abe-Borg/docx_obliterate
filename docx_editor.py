@@ -13,6 +13,8 @@ Usage:
 
 import zipfile
 import shutil
+import stat
+import os
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import argparse
@@ -209,10 +211,36 @@ class DocxEditor:
         print("Reconstruction complete!")
     
     def cleanup(self):
-        """Delete the temporary extraction directory."""
+        """Delete the temporary extraction directory with Windows-compatible handling."""
         if self.extract_dir and self.extract_dir.exists():
-            shutil.rmtree(self.extract_dir)
-            print(f"Cleaned up: {self.extract_dir}")
+            import time
+            import stat
+            
+            def handle_remove_readonly(func, path, exc):
+                """Error handler for Windows readonly files."""
+                if func in (os.unlink, os.rmdir):
+                    # Change the file to be writable and try again
+                    os.chmod(path, stat.S_IWRITE)
+                    func(path)
+                else:
+                    raise
+            
+            try:
+                shutil.rmtree(self.extract_dir, onerror=handle_remove_readonly)
+                print(f"Cleaned up: {self.extract_dir}")
+            except PermissionError:
+                # Windows file locking - wait briefly and retry
+                print(f"Retrying cleanup (Windows file lock)...")
+                time.sleep(0.5)
+                try:
+                    shutil.rmtree(self.extract_dir, onerror=handle_remove_readonly)
+                    print(f"Cleaned up: {self.extract_dir}")
+                except Exception as e:
+                    print(f"Warning: Could not delete temp directory: {self.extract_dir}")
+                    print(f"         You can manually delete it later. Error: {e}")
+            except Exception as e:
+                print(f"Warning: Could not delete temp directory: {self.extract_dir}")
+                print(f"         You can manually delete it later. Error: {e}")
 
 
 def main():
