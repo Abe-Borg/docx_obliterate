@@ -181,7 +181,7 @@ No installation required. Just Python 3.6+.
 
 ```bash
 # Download the script
-wget https://your-repo/docx_decomposer.py
+wget https://your-repo/docx_obliterate.py
 
 # Or copy it to your project
 ```
@@ -190,8 +190,9 @@ wget https://your-repo/docx_decomposer.py
 
 ### Basic Usage - Complete Analysis
 
+**Analyze a document (extract, analyze, and reconstruct):**
 ```bash
-python docx_decomposer.py your_document.docx
+python docx_obliterate.py your_document.docx
 ```
 
 This creates:
@@ -199,10 +200,23 @@ This creates:
 - `your_document_extracted_analysis.md` - Complete atomic analysis (16,506 lines)
 - `your_document_extracted_reconstructed.docx` - Rebuilt document
 
+### Command Line Options
+
+```bash
+# Basic usage - full pipeline (extract + analyze + reconstruct)
+python docx_obliterate.py document.docx
+
+# You must provide a .docx file path
+python docx_obliterate.py          # ERROR - requires argument
+python docx_obliterate.py doc.docx # CORRECT
+```
+
+**Note:** The CLI runs the complete pipeline automatically. For custom workflows (like extracting without analyzing, or analyzing without reconstructing), use the Python API.
+
 ### In Your Code
 
 ```python
-from docx_decomposer import DocxDecomposer
+from docx_obliterate import DocxDecomposer
 
 # Create decomposer
 decomposer = DocxDecomposer("document.docx")
@@ -311,71 +325,46 @@ document_extracted/
 [If present]
 
 ## Binary Files Analysis
-[Images with magic bytes]
+[Images and embedded objects]
 
 ## RAW XML DUMPS
-[Complete XML for every file]
+[Complete unprocessed XML for every file]
 ```
 
-## Example Output Size
-
-For a simple 5-paragraph document with 1 table:
-
-```
-Extracted directory: 24 files
-Analysis report: 16,506 lines (887 KB)
-  - Directory structure: 36 lines
-  - File inventory: 68 lines
-  - Content types: 50 lines
-  - Relationships: 100 lines
-  - document.xml analysis: 400 lines
-  - styles.xml analysis: 8,000+ lines (164 styles)
-  - Numbering: 800 lines
-  - Settings: 200 lines
-  - Font table: 300 lines
-  - Theme: 500 lines
-  - Properties: 100 lines
-  - RAW XML dumps: 6,000+ lines
-```
-
-For a real MEP specification (50 pages):
-- Extracted directory: 50-100 files
-- Analysis report: 50,000+ lines (2-5 MB)
-
-## Use Cases
+## Common Use Cases
 
 ### 1. Deep Debugging
-Understanding why Word does something weird:
+Find why a document behaves strangely:
 ```bash
-python docx_decomposer.py broken_document.docx
-# Inspect extracted XML files or read analysis
+python docx_obliterate.py problem_document.docx
+# Search the analysis for unusual styles, settings, or structures
 ```
 
 ### 2. Format Reverse Engineering
-Figure out how a complex feature is implemented:
+Understand how a specific format is created:
 ```bash
-python docx_decomposer.py example_with_feature.docx
-# Search analysis for relevant XML elements
+python docx_obliterate.py template_document.docx
+# Examine styles.xml section in detail
 ```
 
-### 3. OOXML Learning
-Understand the Office Open XML standard:
+### 3. Learning OOXML
+Study the Open Office XML standard:
 ```bash
-python docx_decomposer.py simple_example.docx
-# Study the raw XML dumps section
+python docx_obliterate.py simple_document.docx
+# See how basic formatting translates to XML
 ```
 
 ### 4. Document Forensics
 Investigate document structure:
 ```bash
-python docx_decomposer.py suspicious_document.docx
+python docx_obliterate.py suspicious_document.docx
 # Check relationships, custom XML, embedded objects
 ```
 
 ### 5. Automated Testing
 Verify document reconstruction:
 ```bash
-python docx_decomposer.py test_input.docx
+python docx_obliterate.py test_input.docx
 # Compare original vs reconstructed document
 ```
 
@@ -577,8 +566,8 @@ for docx_file in Path(".").glob("*.docx"):
 Compare two documents:
 
 ```bash
-python docx_decomposer.py doc_v1.docx
-python docx_decomposer.py doc_v2.docx
+python docx_obliterate.py doc_v1.docx
+python docx_obliterate.py doc_v2.docx
 diff doc_v1_extracted_analysis.md doc_v2_extracted_analysis.md
 ```
 
@@ -598,6 +587,9 @@ The document may have malformed XML. Word can sometimes save invalid XML that st
 
 ### Reconstruction checksum differs
 This is normal. Timestamps and metadata may differ, but content is identical. Verify by opening both documents in Word.
+
+### "Usage: python docx_obliterate.py <path_to_docx>"
+You forgot to provide the document path. The script requires a .docx file argument.
 
 ## Security Considerations
 
