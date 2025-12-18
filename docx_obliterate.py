@@ -981,8 +981,8 @@ def main():
     import sys
     
     if len(sys.argv) < 2:
-        print("Usage: python docx_decomposer.py <path_to_docx>")
-        print("\nExample: python docx_decomposer.py sample.docx")
+        print("Usage: python python docx_obliterate.py <path_to_docx>")
+        print("\nExample: python python docx_obliterate.py MECH_SPEC.docx")
         sys.exit(1)
     
     docx_path = sys.argv[1]
@@ -1000,8 +1000,7 @@ def main():
     # Analyze and save report
     analysis_path = decomposer.save_analysis()
     
-    # Reconstruct the document
-    reconstructed_path = decomposer.reconstruct()
+
     
     print("\n" + "="*60)
     print("SUMMARY")
@@ -1009,8 +1008,6 @@ def main():
     print(f"Original document:     {docx_path}")
     print(f"Extracted to:          {extract_dir}")
     print(f"Analysis report:       {analysis_path}")
-    print(f"Reconstructed document: {reconstructed_path}")
-    print("\nVerify the reconstructed document opens correctly in Word!")
 
 
 if __name__ == "__main__":
